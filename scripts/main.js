@@ -1253,7 +1253,7 @@ async function generatePDFReport() {
         // Disable button during generation
         const btn = document.querySelector('.pdf-download-btn');
         btn.disabled = true;
-        btn.textContent = '🔄 Genererer PDF...';
+        btn.textContent = 'Genererer PDF...';
         
         // Initialize jsPDF
         const { jsPDF } = window.jspdf;
@@ -1276,7 +1276,7 @@ async function generatePDFReport() {
         doc.setTextColor(255, 255, 255);
         doc.setFontSize(24);
         doc.setFont('helvetica', 'bold');
-        doc.text('🏠 Natthav', margin, 25);
+        doc.text('NATTHAV', margin, 25);
         
         doc.setFontSize(12);
         doc.setFont('helvetica', 'normal');
@@ -1313,7 +1313,7 @@ async function generatePDFReport() {
         doc.setFontSize(16);
         doc.setFont('helvetica', 'bold');
         doc.setTextColor(...primaryColor);
-        doc.text('📊 Sammendrag', margin, yPos);
+        doc.text('SAMMENDRAG', margin, yPos);
         yPos += 10;
         
         doc.setFontSize(11);
@@ -1361,16 +1361,17 @@ async function generatePDFReport() {
         doc.setFontSize(16);
         doc.setFont('helvetica', 'bold');
         doc.setTextColor(...primaryColor);
-        doc.text('📈 Grafisk oversikt', margin, yPos);
+        doc.text('GRAFISK OVERSIKT', margin, yPos);
         yPos += 15;
         
         // Export pie chart if it exists
         if (pieChart) {
             try {
                 const pieCanvas = pieChart.canvas;
-                const pieImageData = pieCanvas.toDataURL('image/png', 1.0);
-                const chartWidth = 80;
-                const chartHeight = 60;
+                // Higher quality export
+                const pieImageData = pieCanvas.toDataURL('image/png', 0.9);
+                const chartWidth = 120;
+                const chartHeight = 90;
                 
                 doc.addImage(pieImageData, 'PNG', margin, yPos, chartWidth, chartHeight);
                 
@@ -1391,12 +1392,13 @@ async function generatePDFReport() {
         }
         
         // Export line chart if it exists
-        if (lineChart && yPos < pageHeight - 80) {
+        if (lineChart && yPos < pageHeight - 100) {
             try {
                 const lineCanvas = lineChart.canvas;
-                const lineImageData = lineCanvas.toDataURL('image/png', 1.0);
-                const chartWidth = 80;
-                const chartHeight = 60;
+                // Higher quality export
+                const lineImageData = lineCanvas.toDataURL('image/png', 0.9);
+                const chartWidth = 120;
+                const chartHeight = 90;
                 
                 doc.addImage(lineImageData, 'PNG', margin, yPos, chartWidth, chartHeight);
                 
@@ -1426,7 +1428,7 @@ async function generatePDFReport() {
         doc.setFontSize(16);
         doc.setFont('helvetica', 'bold');
         doc.setTextColor(...primaryColor);
-        doc.text('📋 Detaljert oversikt', margin, yPos);
+        doc.text('DETALJERT OVERSIKT', margin, yPos);
         yPos += 15;
         
         // Group details
@@ -1455,9 +1457,9 @@ async function generatePDFReport() {
                 const kristofferAmount = expense.shares.kristoffer.toLocaleString('no-NO');
                 const guroAmount = expense.shares.guro.toLocaleString('no-NO');
                 
-                doc.text(`• ${expense.name}: ${expense.amount.toLocaleString('no-NO')} kr`, margin + 5, yPos);
-                doc.text(`K: ${kristofferAmount} kr | G: ${guroAmount} kr`, margin + 100, yPos);
-                yPos += 6;
+                doc.text(`- ${expense.name}: ${expense.amount.toLocaleString('no-NO')} kr`, margin + 5, yPos);
+                doc.text(`  Kristoffer: ${kristofferAmount} kr | Guro: ${guroAmount} kr`, margin + 5, yPos + 4);
+                yPos += 10;
             });
             
             yPos += 5;
@@ -1475,7 +1477,7 @@ async function generatePDFReport() {
         
         // Reset button
         btn.disabled = false;
-        btn.innerHTML = '📄 Last ned PDF-rapport';
+        btn.innerHTML = 'Last ned PDF-rapport';
         
     } catch (error) {
         console.error('PDF generation error:', error);
@@ -1484,7 +1486,7 @@ async function generatePDFReport() {
         // Reset button
         const btn = document.querySelector('.pdf-download-btn');
         btn.disabled = false;
-        btn.innerHTML = '📄 Last ned PDF-rapport';
+        btn.innerHTML = 'Last ned PDF-rapport';
     }
 }
 
