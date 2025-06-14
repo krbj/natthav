@@ -391,7 +391,7 @@ function renderExpenseGroups() {
                                 </div>
                                 <div class="participant-share">
                                     <input type="number" class="share-input" data-participant="guro" value="${expense.shares.guro}" oninput="updateFromAmount(this, 'guro', '${group.id}', '${expense.id}')">
-                                    <img src="assets/images/guro.jpg" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'30\\' height=\\'30\\' viewBox=\\'0 0 30 30\\'%3E%3Ccircle cx=\\'15\\' cy=\\'15\\' r=\\'15\\' fill=\\'%23764ba2\\'/%3E%3Ctext x=\\'15\\' y=\\'19\\' text-anchor=\\'middle\\' fill=\\'white\\' font-size=\\'12\\' font-family=\\'Arial\\'%3EG%3C/text%3E%3C/svg%3E'" alt="Guro">
+                                    <img src="assets/images/guro.png" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'30\\' height=\\'30\\' viewBox=\\'0 0 30 30\\'%3E%3Ccircle cx=\\'15\\' cy=\\'15\\' r=\\'15\\' fill=\\'%23764ba2\\'/%3E%3Ctext x=\\'15\\' y=\\'19\\' text-anchor=\\'middle\\' fill=\\'white\\' font-size=\\'12\\' font-family=\\'Arial\\'%3EG%3C/text%3E%3C/svg%3E'" alt="Guro">
                                 </div>
                             </div>
                             <button class="delete-expense-btn" onclick="deleteExpense('${group.id}', '${expense.id}')" title="Slett utgift">×</button>
