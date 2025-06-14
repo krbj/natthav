@@ -1195,38 +1195,6 @@ function generatePDF() {
             </div>
             ` : ''}
             
-            <div class="section">
-                <h2>📈 Grafiske Fremstillinger</h2>
-                <p style="color: #666; font-style: italic; margin-bottom: 20px;">
-                    Grafene fra appen vises ikke i PDF-utskriften, men dataene er inkludert i tabellene ovenfor.
-                </p>
-                
-                <h3>Månedlige utgifter per kategori (Kakediagram)</h3>
-                <div class="chart-placeholder">
-                    📊 Kakediagram som viser fordeling av månedlige utgifter per kategori<br>
-                    <small>Se "Utgiftsgrupper" seksjonen ovenfor for detaljerte data</small>
-                </div>
-                
-                <h3>Akkumulert utgiftsutvikling (Linjediagram)</h3>
-                <div class="chart-placeholder">
-                    📈 Linjediagram som viser akkumulerte utgifter over tid<br>
-                    <small>Basert på månedlige data: Kristoffer ${kristofferTotal.toLocaleString()} kr/mnd, Guro ${guroTotal.toLocaleString()} kr/mnd</small>
-                </div>
-                
-                ${expenseData.yearlyData.length > 0 ? `
-                <h3>Årlige utgifter (Søylediagram)</h3>
-                <div class="chart-placeholder">
-                    📊 Søylediagram som viser årlige utgifter per deltaker<br>
-                    <small>Se "Årlig Oversikt" tabellen ovenfor for detaljerte data</small>
-                </div>
-                
-                <h3>Fordeling av totale årlige utgifter (Kakediagram)</h3>
-                <div class="chart-placeholder">
-                    🥧 Kakediagram som viser hver deltakers andel av totale årlige utgifter<br>
-                    <small>Kristoffer: ${grandYearlyTotal > 0 ? Math.round(yearlyTotalKristoffer/grandYearlyTotal*100) : 0}%, Guro: ${grandYearlyTotal > 0 ? Math.round(yearlyTotalGuro/grandYearlyTotal*100) : 0}%</small>
-                </div>
-                ` : ''}
-            </div>
             
             <div class="no-print" style="margin-top: 30px; text-align: center;">
                 <button onclick="window.print()" style="padding: 10px 20px; background: #667eea; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px;">
