@@ -1,0 +1,234 @@
+NATTHAV PROSJEKT - CLAUDE AI DIALOG LOG
+=====================================
+
+Dato: 6/12/2025
+
+OPPSTART:
+---------
+Bruker beskrev "Natthav" appen - et prosjekt for å hjelpe samboere med oversikt og kontroll over felles faste utgifter.
+
+HOVEDFUNKSJONER DEFINERT:
+- Fire standard hovedgrupper: boliglån, strøm, felleskostnader, felleskonto for mat
+- Mulighet for å legge til egne hovedgrupper
+- Underkategorier innenfor hver hovedgruppe
+- Prosent-slider for fordeling mellom deltakere
+- Individuelt månedlig budsjett med popup-varsler ved overskridelse
+- Grafisk fremstilling med kakediagram og linjediagram
+- Profilbilder for visuell identifikasjon
+
+UTVIKLINGSSTRATEGI:
+- HTML-demoer lages først for hver fane
+- Demoer må godkjennes av Kristoffer Bjerkvik før implementering
+- Stegvis utvikling med todo-liste tracking
+
+PROSJEKTSTRUKTUR OPPRETTET:
+- Grunnleggende mappestruktur
+- index.html med tab-navigasjon
+- CSS og JavaScript grunnlag
+- README.md med prosjektbeskrivelse
+- Denne dialog-loggen
+
+NESTE STEG: Lage HTML-demoer for utgiftsfordeling og grafisk fremstilling.
+
+HTML-DEMOER FULLFØRT:
+======================
+
+1. DEMO-UTGIFTER.HTML:
+   - Fullstendig interaktiv demo av utgiftsfordeling
+   - Fire standard hovedgrupper implementert
+   - Prosent-slider for justering av andeler
+   - Visuell fremstilling med profilbilder
+   - Budsjettovervåking med popup-varsler
+   - Responsive design og hover-effekter
+   - Realtids oppdatering av totalsummer
+
+2. DEMO-GRAFIKK.HTML:
+   - Kakediagram for månedlige utgifter per kategori
+   - Linjediagram for akkumulert utgiftsutvikling
+   - Tidsperiode-kontroller (6mnd, 1år, 2år)
+   - Detaljert kategorioversikt med hover-effekter
+   - Statistikk-sammendrag
+   - Chart.js for profesjonelle diagrammer
+   - Tooltips med underposter ved hover
+
+TEKNISKE DETALJER:
+- SVG-baserte profilbilder for demo
+- Responsiv grid-layout
+- CSS gradients og animasjoner
+- JavaScript for interaktivitet
+- Chart.js CDN for diagrammer
+
+STATUS: Begge HTML-demoer er klare for godkjenning av Kristoffer Bjerkvik før implementering kan starte.
+
+OPPDATERING - DYNAMISKE KONTROLLER:
+===================================
+
+Bruker ønsket forbedringer til slider og input-funksjonalitet:
+
+IMPLEMENTERTE ENDRINGER:
+- Erstattet statiske beløp-visninger med input-felt
+- Dynamisk slider som oppdateres når man drar
+- Man kan skrive inn beløp for hver deltaker
+- Alt oppdateres automatisk og synkronisert:
+  * Slider → oppdaterer input-felt og prosent
+  * Input-felt → oppdaterer slider og annen deltakers beløp
+  * Validering: beløp kan ikke overstige totalsum
+  * Realtids oppdatering av totalsummer
+
+TEKNISKE FORBEDRINGER:
+- oninput for realtids oppdatering (ikke onchange)
+- data-total attributter for å lagre totalbeløp
+- Validering av input (0 til maksbeløp)
+- updateFromSlider() og updateFromAmount() funksjoner
+- Automatisk beregning av motstående beløp
+
+INTERAKTIVITET:
+- Dra slider → ser øyeblikkelig endring i kr-beløp
+- Skriv inn kr → slider og prosent oppdateres automatisk
+- Totalsummer oppdateres konstant
+- Budsjettvarsel fortsatt fungerer
+
+Demo er nå fullstendig dynamisk og interaktiv som ønsket.
+
+OPPDATERING - KATEGORINAVNENDRINGER:
+====================================
+
+Bruker ønsket endringer til kategorinavnene:
+
+NAVNENDRINGER:
+- Boliglån → Bolig
+- Strøm → Energi  
+- Felleskostnader → Felleskostnader borettslag
+- Felleskonto Mat → Felleskonto
+
+OPPDATERTE FILER:
+- demo-utgifter.html: Alle kategorititler oppdatert
+- demo-grafikk.html: Kakediagram labels og kategori-kort oppdatert
+- categoryDetails object oppdatert for tooltip-funksjonalitet
+
+Begge demoer har nå konsistente kategorinavnendringer gjennom hele grensesnittet.
+
+OPPDATERING - DELTAKERNAVN:
+===========================
+
+Bruker ønsket endring av deltakernavn:
+
+NAVNENDRING:
+- Samboer → Guro Kyte Solvik
+
+OPPDATERTE ELEMENTER:
+- Profilbilder: Endret S til G i alle SVG-ikoner
+- Deltakernavn i alle seksjoner
+- Totaloversikt med Guro Kyte Solvik
+- Budsjettvarsel-popup oppdatert
+- Linjediagram labels for Guro Kyte Solvik
+- Statistikk-sammendrag med nytt navn
+
+Begge demoer har nå konsistente deltakernavnendringer gjennom hele grensesnittet.
+
+OPPDATERING - KRISTOFFER BJEKVIK + BUDSJETTVARSEL:
+==================================================
+
+Bruker ønsket ytterligere endringer:
+
+NAVNENDRING:
+- Kristoffer → Kristoffer Bjekvik
+
+BUDSJETTVARSEL ENDRINGER:
+- Fjernet popup-vindu helt
+- Lagt til rød markering av budsjett input-boks når overskredet
+- CSS-klasse .budget-exceeded med rød border og bakgrunn
+- Dynamisk budsjettsjekk som leser fra input-feltene
+- Automatisk tilbakestilling når budsjett ikke lenger overskrides
+
+TEKNISKE FORBEDRINGER:
+- ID-er på budsjett input-felt (kristoffer-budget, guro-budget)
+- checkBudgets() funksjon omskrevet for visuell feedback
+- Fjernet popup-relatert HTML og JavaScript
+- Budsjettsjekk bruker faktiske verdier fra input-felt
+
+VISUELL FEEDBACK:
+- Rød border på budsjett-input når overskredet
+- Lysrød bakgrunnsfarge
+- Rød skygge-effekt
+- Automatisk oppdatering ved endringer
+
+Begge demoer har nå oppdaterte deltakernavnendringer og forbedret budsjettvarsel-system.
+
+OPPDATERING - SMILEFJES OG SLETTING:
+====================================
+
+Bruker ønsket ytterligere forbedringer:
+
+SMILEFJES-INDIKATORER:
+- Lagt til emoji ved siden av budsjett input-boks
+- 😊 Grønt/godt: Ligger godt innenfor budsjett (mer enn 500 kr under)
+- 😐 Nøytralt: Ligger nært budsjett (innenfor 500 kr +/-)
+- 😭 Rødt/dårlig: Overskrider budsjettet
+- Animerte emoji-overganger med CSS transitions
+
+SLETTE-FUNKSJONALITET:
+- Slett hovedgrupper: Rød X-knapp i group-header
+- Slett utgiftsposter: Rød X-knapp på hver utgiftspost
+- Bekreftelsesdialog før sletting
+- Automatisk oppdatering av totalsummer etter sletting
+- Responsiv styling med hover-effekter
+
+TEKNISKE FORBEDRINGER:
+- budget-container for layout av input + emoji
+- deleteGroup() og deleteExpense() funksjoner
+- .closest() for å finne riktig element å slette
+- Oppdatert checkBudgets() med emoji-logikk
+- Positioning av slett-knapper med absolut posisjonering
+
+VISUELL FEEDBACK:
+- Budsjett emoji endres dynamisk basert på forbruk
+- Slett-knapper med hover-animasjoner
+- Konfirmasjons-dialoger for sikkerhet
+- Automatisk re-kalkulering av totaler
+
+Demo har nå full CRUD-funksjonalitet for utgifter og grupper med visuell budsjett-feedback.
+
+OPPDATERING - BUDSJETTVISNING OG BILDER:
+========================================
+
+Bruker ønsket ytterligere forbedringer:
+
+BUDSJETT-STATUS VISNING:
+- Ny boks ved siden av budsjett som viser differanse
+- Grønn boks med "+XXX kr" når under budsjett
+- Rød boks med "XXX kr" (uten minus) når over budsjett
+- Automatisk formatering med tusen-separatorer
+- Dynamisk oppdatering ved endringer i utgifter
+
+SLETT-KNAPP POSISJONERING:
+- Flyttet slett-knapper lengre til høyre (right: -40px)
+- Lagt til padding-right: 50px på expense-item
+- Unngår overlapping med Guro sitt profilbilde
+- Bedre visuell separasjon
+
+PROFILBILDE-SYSTEM:
+- Opprettet /assets/images/ mappe
+- README.md med detaljerte instruksjoner
+- Filnavn-krav: kristoffer.jpg og guro.jpg
+- Automatisk fallback til SVG hvis bilder mangler
+- onerror-attributt på alle img-tags
+- Oppdatert alle steder hvor profilbilder vises:
+  * Deltaker-seksjonen (store bilder)
+  * Utgiftsfordeling (små bilder)
+  * Totaloversikt
+  * Grafisk fremstilling
+
+TEKNISKE FORBEDRINGER:
+- budget-status CSS-klasser med positive/negative styling
+- Flexbox layout for budget-container
+- Responsiv design med flex-wrap
+- Konsistent bildeimplementering med fallback
+
+BILDEKRAV DOKUMENTERT:
+- Format: JPG/PNG
+- Størrelse: 60x60px minimum, 100x100px anbefalt
+- Kvadratisk sideforhold
+- Under 500KB per bilde
+
+Demo har nå professional bildehåndtering og forbedret budsjettvisning.

@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Yearly Overview</title>
+    <link rel="stylesheet" href="styles/main.css">
+</head>
+<body>
+    <div class="app-container">
+        <div id="yearly-tab" class="tab-content active">
+            <div class="yearly-content">
+                <div class="yearly-header">
+                    <h2>Årlig utgiftsoversikt</h2>
+                    <p>Registrer og sammenlign totale årlige utgifter per deltaker</p>
+                </div>
+                
+                <div class="yearly-input-section">
+                    <h3>Legg til årlige data</h3>
+                    <div class="yearly-form">
+                        <div class="form-group">
+                            <label for="year-input">År:</label>
+                            <input type="number" id="year-input" min="2020" max="2030" value="2024" placeholder="2024">
+                        </div>
+                        <div class="form-group">
+                            <label for="kristoffer-yearly">Kristoffer totalt (kr):</label>
+                            <input type="number" id="kristoffer-yearly" placeholder="150000">
+                        </div>
+                        <div class="form-group">
+                            <label for="guro-yearly">Guro totalt (kr):</label>
+                            <input type="number" id="guro-yearly" placeholder="120000">
+                        </div>
+                        <button class="add-yearly-btn" onclick="addYearlyData()">+ Legg til årlig data</button>
+                    </div>
+                </div>
+                
+                <div class="yearly-chart-section">
+                    <div class="chart-container">
+                        <div class="chart-header">Årlige utgifter per deltaker</div>
+                        <div class="chart-wrapper">
+                            <canvas id="yearlyChart"></canvas>
+                        </div>
+                        <div class="chart-info">
+                            <p><strong>Stablede søyler</strong> viser total årlig utgift sammensatt av hver deltakers bidrag.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="yearly-data-table">
+                    <h3>Registrerte årlige data</h3>
+                    <div class="table-container">
+                        <table class="yearly-table">
+                            <thead>
+                                <tr>
+                                    <th>År</th>
+                                    <th>Kristoffer</th>
+                                    <th>Guro</th>
+                                    <th>Totalt</th>
+                                    <th>Handlinger</th>
+                                </tr>
+                            </thead>
+                            <tbody id="yearly-table-body">
+                                <!-- Data vil bli lagt til her -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="scripts/main.js"></script>
+</body>
+</html>

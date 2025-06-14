@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Natthav - Felles utgifter</title>
+    <link rel="stylesheet" href="styles/main.css">
+</head>
+<body>
+    <div class="app-container">
+        <header class="app-header">
+            <h1>Natthav</h1>
+        </header>
+
+        <!-- Fixed Summary Section -->
+        <div class="fixed-summary-container">
+            <!-- Top row: Totaloversikt -->
+            <div class="top-summary-row">
+                <div class="summary-totals-centered">
+                    <div class="participant-overview">
+                        <img src="assets/images/kristoffer.png" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'60\' height=\'60\' viewBox=\'0 0 60 60\'%3E%3Ccircle cx=\'30\' cy=\'30\' r=\'30\' fill=\'%23667eea\'/%3E%3Ctext x=\'30\' y=\'38\' text-anchor=\'middle\' fill=\'white\' font-size=\'24\' font-family=\'Arial\'%3EK%3C/text%3E%3C/svg%3E'" alt="Kristoffer" class="participant-avatar">
+                        <div class="participant-summary">
+                            <span class="participant-name">Kristoffer</span>
+                            <span class="total-amount" id="kristoffer-total-fixed">0 kr</span>
+                            <span class="amount-label">månedlig utgift</span>
+                        </div>
+                    </div>
+                    
+                    <div class="vs-divider">vs</div>
+                    
+                    <div class="participant-overview">
+                        <img src="assets/images/guro.jpg" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'60\' height=\'60\' viewBox=\'0 0 60 60\'%3E%3Ccircle cx=\'30\' cy=\'30\' r=\'30\' fill=\'%23764ba2\'/%3E%3Ctext x=\'30\' y=\'38\' text-anchor=\'middle\' fill=\'white\' font-size=\'24\' font-family=\'Arial\'%3EG%3C/text%3E%3C/svg%3E'" alt="Guro" class="participant-avatar">
+                        <div class="participant-summary">
+                            <span class="participant-name">Guro</span>
+                            <span class="total-amount" id="samboer-total-fixed">0 kr</span>
+                            <span class="amount-label">månedlig utgift</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Bottom row: Budsjettinput -->
+            <div class="budget-input-row">
+                <div class="budget-input-group">
+                    <div class="budget-input-container">
+                        <label>Kristoffer budsjett:</label>
+                        <div class="input-with-status">
+                            <input type="number" class="budget-input-compact" id="kristoffer-budget" value="15000">
+                            <span class="budget-emoji-compact" id="kristoffer-emoji">😊</span>
+                            <div class="budget-status-compact positive" id="kristoffer-status">+4 130 kr</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="budget-input-group">
+                    <div class="budget-input-container">
+                        <label>Guro budsjett:</label>
+                        <div class="input-with-status">
+                            <input type="number" class="budget-input-compact" id="guro-budget" value="12000">
+                            <span class="budget-emoji-compact" id="guro-emoji">😊</span>
+                            <div class="budget-status-compact positive" id="guro-status">+2 370 kr</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Tab navigation -->
+            <nav class="tab-navigation">
+                <button class="tab-btn active" data-tab="expenses">Utgiftsfordeling</button>
+                <button class="tab-btn" data-tab="charts">Grafisk fremstilling</button>
+                <button class="tab-btn" data-tab="yearly">Årlig oversikt</button>
+            </nav>
+        </div>
+
+        <main class="main-content">
+            <div id="expenses-tab" class="tab-content active">
+                <div class="expenses-content">
+                    <div class="yearly-header">
+                        <h2>Utgiftsfordeling</h2>
+                        <p>Administrer og fordel månedlige utgifter mellom deltakere</p>
+                    </div>
+
+                    <div class="expense-groups" id="expense-groups">
+                        <!-- Expense groups will be added here -->
+                    </div>
+
+                    <div class="app-controls">
+                        <button class="add-group-btn" onclick="addNewGroup()">+ Legg til ny hovedgruppe</button>
+                        <div class="data-controls">
+                            <button class="save-btn" onclick="saveData()">💾 Lagre data</button>
+                            <button class="load-btn" onclick="loadData()">📂 Last inn data</button>
+                            <button class="load-btn" onclick="document.getElementById('file-input').click()">📁 Importer fil</button>
+                            <button class="export-btn" onclick="exportData()">📤 Eksporter data</button>
+                            <button class="pdf-btn" onclick="generatePDF()">📄 Lag PDF rapport</button>
+                            <input type="file" id="file-input" accept=".json" style="display: none;" onchange="importData(this)">
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            
+            <div id="charts-tab" class="tab-content">
+                <div class="charts-content">
+                    <div class="yearly-header">
+                        <h2>Grafisk fremstilling</h2>
+                        <p>Visuell oversikt over utgiftsfordeling og utvikling over tid</p>
+                    </div>
+                    
+                    <div class="participants-legend">
+                        <div class="participant-legend">
+                            <img src="assets/images/kristoffer.png" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'30\' height=\'30\' viewBox=\'0 0 30 30\'%3E%3Ccircle cx=\'15\' cy=\'15\' r=\'15\' fill=\'%23667eea\'/%3E%3Ctext x=\'15\' y=\'19\' text-anchor=\'middle\' fill=\'white\' font-size=\'12\' font-family=\'Arial\'%3EK%3C/text%3E%3C/svg%3E'" alt="Kristoffer Bjekvik">
+                            <div class="legend-line kristoffer-line"></div>
+                            <span>Kristoffer Bjekvik</span>
+                        </div>
+                        <div class="participant-legend">
+                            <img src="assets/images/guro.jpg" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'30\' height=\'30\' viewBox=\'0 0 30 30\'%3E%3Ccircle cx=\'15\' cy=\'15\' r=\'15\' fill=\'%23764ba2\'/%3E%3Ctext x=\'15\' y=\'19\' text-anchor=\'middle\' fill=\'white\' font-size=\'12\' font-family=\'Arial\'%3EG%3C/text%3E%3C/svg%3E'" alt="Guro Kyte Solvik">
+                            <div class="legend-line samboer-line"></div>
+                            <span>Guro Kyte Solvik</span>
+                        </div>
+                    </div>
+
+                    <div class="charts-grid">
+                        <div class="chart-container">
+                            <div class="chart-header">Månedlige utgifter per kategori</div>
+                            <div class="pie-chart-wrapper">
+                                <canvas id="pieChart"></canvas>
+                            </div>
+                            <div class="chart-info">
+                                <p><strong>Hover over</strong> et kakestykke for å se detaljer om underposter i kategorien.</p>
+                            </div>
+                        </div>
+
+                        <div class="chart-container">
+                            <div class="chart-header">Akkumulert utgiftsutvikling</div>
+                            <div class="time-controls">
+                                <button class="time-btn active" onclick="updateTimeRange('6m')">6 mnd</button>
+                                <button class="time-btn" onclick="updateTimeRange('1y')">1 år</button>
+                                <button class="time-btn" onclick="updateTimeRange('2y')">2 år</button>
+                            </div>
+                            <div class="chart-wrapper">
+                                <canvas id="lineChart"></canvas>
+                            </div>
+                            <div class="chart-info">
+                                <p><strong>Akkumulerte</strong> utgifter viser den totale summen hver deltaker har betalt over tid.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="stats-summary">
+                        <div class="stat-card">
+                            <div class="stat-value" id="total-monthly">0 kr</div>
+                            <div class="stat-label">Totale månedlige utgifter</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="kristoffer-monthly">0 kr</div>
+                            <div class="stat-label">Kristoffer Bjekvik</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="guro-monthly">0 kr</div>
+                            <div class="stat-label">Guro Kyte Solvik</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="yearly-total">0 kr</div>
+                            <div class="stat-label">Årlige totalkostnader</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="yearly-tab" class="tab-content">
+                <div class="yearly-content">
+                    <div class="yearly-header">
+                        <h2>Årlig utgiftsoversikt</h2>
+                        <p>Registrer og sammenlign totale årlige utgifter per deltaker</p>
+                    </div>
+                    
+                    <div class="yearly-input-section">
+                        <h3>Legg til årlige data</h3>
+                        <div class="yearly-form">
+                            <div class="form-group">
+                                <label for="year-input">År:</label>
+                                <input type="number" id="year-input" min="2020" max="2030" value="2024" placeholder="2024">
+                            </div>
+                            <div class="form-group">
+                                <label for="kristoffer-yearly">Kristoffer totalt (kr):</label>
+                                <input type="number" id="kristoffer-yearly" placeholder="150000">
+                            </div>
+                            <div class="form-group">
+                                <label for="guro-yearly">Guro totalt (kr):</label>
+                                <input type="number" id="guro-yearly" placeholder="120000">
+                            </div>
+                            <button class="add-yearly-btn" onclick="addYearlyData()">+ Legg til årlig data</button>
+                        </div>
+                    </div>
+                    
+                    <div class="yearly-chart-section">
+                        <div class="charts-grid">
+                            <div class="chart-container">
+                                <div class="chart-header">Årlige utgifter per deltaker</div>
+                                <div class="chart-wrapper">
+                                    <canvas id="yearlyChart"></canvas>
+                                </div>
+                                <div class="chart-info">
+                                    <p><strong>Stablede søyler</strong> viser total årlig utgift sammensatt av hver deltakers bidrag.</p>
+                                </div>
+                            </div>
+                            
+                            <div class="chart-container">
+                                <div class="chart-header">Fordeling av totale utgifter</div>
+                                <div class="pie-chart-wrapper">
+                                    <canvas id="yearlyPieChart"></canvas>
+                                </div>
+                                <div class="chart-info">
+                                    <p><strong>Kakediagram</strong> viser hver deltakers andel av de totale årlige utgiftene.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="yearly-data-table">
+                        <h3>Registrerte årlige data</h3>
+                        <div class="table-container">
+                            <table class="yearly-table">
+                                <thead>
+                                    <tr>
+                                        <th>År</th>
+                                        <th>Kristoffer</th>
+                                        <th>Guro</th>
+                                        <th>Totalt</th>
+                                        <th>Handlinger</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="yearly-table-body">
+                                    <!-- Data vil bli lagt til her -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="scripts/main.js"></script>
+</body>
+</html>
