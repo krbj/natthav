@@ -1247,6 +1247,247 @@ function generatePDF() {
     printWindow.focus();
 }
 
+// PDF Report Generation with Charts
+async function generatePDFReport() {
+    try {
+        // Disable button during generation
+        const btn = document.querySelector('.pdf-download-btn');
+        btn.disabled = true;
+        btn.textContent = '🔄 Genererer PDF...';
+        
+        // Initialize jsPDF
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF('p', 'mm', 'a4');
+        
+        // Page dimensions
+        const pageWidth = doc.internal.pageSize.getWidth();
+        const pageHeight = doc.internal.pageSize.getHeight();
+        const margin = 20;
+        
+        // Colors
+        const primaryColor = [102, 126, 234]; // #667eea
+        const secondaryColor = [118, 75, 162]; // #764ba2
+        
+        // Header with gradient effect
+        doc.setFillColor(...primaryColor);
+        doc.rect(0, 0, pageWidth, 40, 'F');
+        
+        // Title
+        doc.setTextColor(255, 255, 255);
+        doc.setFontSize(24);
+        doc.setFont('helvetica', 'bold');
+        doc.text('🏠 Natthav', margin, 25);
+        
+        doc.setFontSize(12);
+        doc.setFont('helvetica', 'normal');
+        doc.text('Utgiftsrapport for felles utgifter', margin, 32);
+        
+        // Date
+        const now = new Date();
+        const dateStr = now.toLocaleDateString('no-NO', { 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric' 
+        });
+        doc.text(`Generert: ${dateStr}`, pageWidth - margin, 25, { align: 'right' });
+        
+        let yPos = 55;
+        
+        // Reset text color
+        doc.setTextColor(0, 0, 0);
+        
+        // Calculate totals
+        let kristofferTotal = 0;
+        let guroTotal = 0;
+        let totalMonthly = 0;
+        
+        expenseData.groups.forEach(group => {
+            group.expenses.forEach(expense => {
+                kristofferTotal += expense.shares.kristoffer;
+                guroTotal += expense.shares.guro;
+                totalMonthly += expense.amount;
+            });
+        });
+        
+        // Summary section
+        doc.setFontSize(16);
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(...primaryColor);
+        doc.text('📊 Sammendrag', margin, yPos);
+        yPos += 10;
+        
+        doc.setFontSize(11);
+        doc.setTextColor(0, 0, 0);
+        doc.setFont('helvetica', 'normal');
+        
+        // Summary boxes
+        const boxWidth = (pageWidth - 3 * margin) / 2;
+        const boxHeight = 25;
+        
+        // Kristoffer box
+        doc.setFillColor(240, 248, 255);
+        doc.rect(margin, yPos, boxWidth, boxHeight, 'F');
+        doc.setDrawColor(...primaryColor);
+        doc.rect(margin, yPos, boxWidth, boxHeight);
+        
+        doc.setFont('helvetica', 'bold');
+        doc.text('Kristoffer Bjekvik', margin + 5, yPos + 8);
+        doc.setFont('helvetica', 'normal');
+        doc.text(`Månedlig: ${kristofferTotal.toLocaleString('no-NO')} kr`, margin + 5, yPos + 15);
+        doc.text(`Budsjett: ${expenseData.participants.kristoffer.budget.toLocaleString('no-NO')} kr`, margin + 5, yPos + 20);
+        
+        // Guro box
+        const gurobBoxX = margin + boxWidth + margin/2;
+        doc.setFillColor(248, 240, 255);
+        doc.rect(gurobBoxX, yPos, boxWidth, boxHeight, 'F');
+        doc.setDrawColor(...secondaryColor);
+        doc.rect(gurobBoxX, yPos, boxWidth, boxHeight);
+        
+        doc.setFont('helvetica', 'bold');
+        doc.text('Guro Kyte Solvik', gurobBoxX + 5, yPos + 8);
+        doc.setFont('helvetica', 'normal');
+        doc.text(`Månedlig: ${guroTotal.toLocaleString('no-NO')} kr`, gurobBoxX + 5, yPos + 15);
+        doc.text(`Budsjett: ${expenseData.participants.guro.budget.toLocaleString('no-NO')} kr`, gurobBoxX + 5, yPos + 20);
+        
+        yPos += 35;
+        
+        // Total
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(12);
+        doc.text(`Total månedlige utgifter: ${totalMonthly.toLocaleString('no-NO')} kr`, margin, yPos);
+        yPos += 15;
+        
+        // Charts section
+        doc.setFontSize(16);
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(...primaryColor);
+        doc.text('📈 Grafisk oversikt', margin, yPos);
+        yPos += 15;
+        
+        // Export pie chart if it exists
+        if (pieChart) {
+            try {
+                const pieCanvas = pieChart.canvas;
+                const pieImageData = pieCanvas.toDataURL('image/png', 1.0);
+                const chartWidth = 80;
+                const chartHeight = 60;
+                
+                doc.addImage(pieImageData, 'PNG', margin, yPos, chartWidth, chartHeight);
+                
+                // Chart title
+                doc.setFontSize(10);
+                doc.setFont('helvetica', 'bold');
+                doc.setTextColor(0, 0, 0);
+                doc.text('Utgifter per kategori', margin, yPos + chartHeight + 8);
+                
+                yPos += chartHeight + 20;
+            } catch (error) {
+                console.warn('Could not export pie chart:', error);
+                doc.setFontSize(10);
+                doc.setTextColor(100, 100, 100);
+                doc.text('Kakediagram kunne ikke eksporteres', margin, yPos);
+                yPos += 15;
+            }
+        }
+        
+        // Export line chart if it exists
+        if (lineChart && yPos < pageHeight - 80) {
+            try {
+                const lineCanvas = lineChart.canvas;
+                const lineImageData = lineCanvas.toDataURL('image/png', 1.0);
+                const chartWidth = 80;
+                const chartHeight = 60;
+                
+                doc.addImage(lineImageData, 'PNG', margin, yPos, chartWidth, chartHeight);
+                
+                // Chart title
+                doc.setFontSize(10);
+                doc.setFont('helvetica', 'bold');
+                doc.setTextColor(0, 0, 0);
+                doc.text('Akkumulert utgiftsutvikling', margin, yPos + chartHeight + 8);
+                
+                yPos += chartHeight + 20;
+            } catch (error) {
+                console.warn('Could not export line chart:', error);
+                doc.setFontSize(10);
+                doc.setTextColor(100, 100, 100);
+                doc.text('Linjediagram kunne ikke eksporteres', margin, yPos);
+                yPos += 15;
+            }
+        }
+        
+        // Add new page for detailed breakdown if needed
+        if (yPos > pageHeight - 50) {
+            doc.addPage();
+            yPos = margin;
+        }
+        
+        // Detailed breakdown
+        doc.setFontSize(16);
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(...primaryColor);
+        doc.text('📋 Detaljert oversikt', margin, yPos);
+        yPos += 15;
+        
+        // Group details
+        expenseData.groups.forEach(group => {
+            if (yPos > pageHeight - 40) {
+                doc.addPage();
+                yPos = margin;
+            }
+            
+            doc.setFontSize(12);
+            doc.setFont('helvetica', 'bold');
+            doc.setTextColor(...secondaryColor);
+            doc.text(`${group.name}`, margin, yPos);
+            yPos += 8;
+            
+            doc.setFontSize(10);
+            doc.setFont('helvetica', 'normal');
+            doc.setTextColor(0, 0, 0);
+            
+            group.expenses.forEach(expense => {
+                if (yPos > pageHeight - 30) {
+                    doc.addPage();
+                    yPos = margin;
+                }
+                
+                const kristofferAmount = expense.shares.kristoffer.toLocaleString('no-NO');
+                const guroAmount = expense.shares.guro.toLocaleString('no-NO');
+                
+                doc.text(`• ${expense.name}: ${expense.amount.toLocaleString('no-NO')} kr`, margin + 5, yPos);
+                doc.text(`K: ${kristofferAmount} kr | G: ${guroAmount} kr`, margin + 100, yPos);
+                yPos += 6;
+            });
+            
+            yPos += 5;
+        });
+        
+        // Footer
+        const footerY = pageHeight - 15;
+        doc.setFontSize(8);
+        doc.setTextColor(100, 100, 100);
+        doc.text('Generert av Natthav - Felles utgifter for samboere', margin, footerY);
+        doc.text(`Side 1 av ${doc.getNumberOfPages()}`, pageWidth - margin, footerY, { align: 'right' });
+        
+        // Save the PDF
+        doc.save(`Natthav-rapport-${now.toISOString().split('T')[0]}.pdf`);
+        
+        // Reset button
+        btn.disabled = false;
+        btn.innerHTML = '📄 Last ned PDF-rapport';
+        
+    } catch (error) {
+        console.error('PDF generation error:', error);
+        alert('Det oppstod en feil ved generering av PDF. Prøv igjen.');
+        
+        // Reset button
+        const btn = document.querySelector('.pdf-download-btn');
+        btn.disabled = false;
+        btn.innerHTML = '📄 Last ned PDF-rapport';
+    }
+}
+
 // Function to switch to charts tab
 function switchToChartsTab() {
     // Remove active class from all tabs and content
