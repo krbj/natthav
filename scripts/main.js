@@ -1357,72 +1357,8 @@ async function generatePDFReport() {
         doc.text(`Total månedlige utgifter: ${totalMonthly.toLocaleString('no-NO')} kr`, margin, yPos);
         yPos += 15;
         
-        // Charts section
-        doc.setFontSize(16);
-        doc.setFont('helvetica', 'bold');
-        doc.setTextColor(...primaryColor);
-        doc.text('GRAFISK OVERSIKT', margin, yPos);
-        yPos += 15;
-        
-        // Export pie chart if it exists
-        if (pieChart) {
-            try {
-                const pieCanvas = pieChart.canvas;
-                // Higher quality export
-                const pieImageData = pieCanvas.toDataURL('image/png', 0.9);
-                const chartWidth = 120;
-                const chartHeight = 90;
-                
-                doc.addImage(pieImageData, 'PNG', margin, yPos, chartWidth, chartHeight);
-                
-                // Chart title
-                doc.setFontSize(10);
-                doc.setFont('helvetica', 'bold');
-                doc.setTextColor(0, 0, 0);
-                doc.text('Utgifter per kategori', margin, yPos + chartHeight + 8);
-                
-                yPos += chartHeight + 20;
-            } catch (error) {
-                console.warn('Could not export pie chart:', error);
-                doc.setFontSize(10);
-                doc.setTextColor(100, 100, 100);
-                doc.text('Kakediagram kunne ikke eksporteres', margin, yPos);
-                yPos += 15;
-            }
-        }
-        
-        // Export line chart if it exists
-        if (lineChart && yPos < pageHeight - 100) {
-            try {
-                const lineCanvas = lineChart.canvas;
-                // Higher quality export
-                const lineImageData = lineCanvas.toDataURL('image/png', 0.9);
-                const chartWidth = 120;
-                const chartHeight = 90;
-                
-                doc.addImage(lineImageData, 'PNG', margin, yPos, chartWidth, chartHeight);
-                
-                // Chart title
-                doc.setFontSize(10);
-                doc.setFont('helvetica', 'bold');
-                doc.setTextColor(0, 0, 0);
-                doc.text('Akkumulert utgiftsutvikling', margin, yPos + chartHeight + 8);
-                
-                yPos += chartHeight + 20;
-            } catch (error) {
-                console.warn('Could not export line chart:', error);
-                doc.setFontSize(10);
-                doc.setTextColor(100, 100, 100);
-                doc.text('Linjediagram kunne ikke eksporteres', margin, yPos);
-                yPos += 15;
-            }
-        }
-        
-        // Add new page for detailed breakdown if needed
-        if (yPos > pageHeight - 50) {
-            doc.addPage();
-            yPos = margin;
-        }
+        // Add spacing before detailed breakdown
+        yPos += 10;
         
         // Detailed breakdown
         doc.setFontSize(16);
