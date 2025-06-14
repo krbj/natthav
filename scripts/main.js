@@ -1,3 +1,51 @@
+// Password Protection
+function checkPassword() {
+    const passwordInput = document.getElementById('password-input');
+    const errorMessage = document.getElementById('error-message');
+    const correctPassword = 'breiflabb';
+    
+    if (passwordInput.value === correctPassword) {
+        // Hide login screen and show main app
+        document.getElementById('login-screen').style.display = 'none';
+        document.getElementById('main-app').style.display = 'block';
+        
+        // Store login status in session
+        sessionStorage.setItem('natthav-authenticated', 'true');
+        
+        // Initialize the app
+        initializeApp();
+    } else {
+        // Show error message
+        errorMessage.style.display = 'block';
+        passwordInput.value = '';
+        passwordInput.focus();
+    }
+}
+
+// Check if user is already authenticated
+function checkAuthentication() {
+    if (sessionStorage.getItem('natthav-authenticated') === 'true') {
+        document.getElementById('login-screen').style.display = 'none';
+        document.getElementById('main-app').style.display = 'block';
+        initializeApp();
+    }
+}
+
+// Allow Enter key to submit password
+document.addEventListener('DOMContentLoaded', function() {
+    checkAuthentication();
+    
+    const passwordInput = document.getElementById('password-input');
+    if (passwordInput) {
+        passwordInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                checkPassword();
+            }
+        });
+        passwordInput.focus();
+    }
+});
+
 // Global variables
 let expenseData = {
     participants: {
@@ -13,13 +61,13 @@ const defaultColors = ['#667eea', '#764ba2', '#f093fb', '#f5576c', '#4facfe', '#
 
 let pieChart, lineChart, yearlyChart, yearlyPieChart;
 
-document.addEventListener('DOMContentLoaded', function() {
+function initializeApp() {
     initializeTabs();
     initializeExpenses();
     initializeCharts();
     initializeYearlyTab();
     loadSampleData();
-});
+}
 
 function initializeTabs() {
     const tabButtons = document.querySelectorAll('.tab-btn');
