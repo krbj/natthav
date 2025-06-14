@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Natthav - Utgiftsfordeling Demo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+            padding: 2rem;
+        }
+
+        .demo-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .demo-header {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #667eea;
+        }
+
+        .demo-header h1 {
+            color: #667eea;
+            margin-bottom: 0.5rem;
+        }
+
+        .participants-section {
+            display: flex;
+            gap: 2rem;
+            margin-bottom: 2rem;
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .participant {
+            flex: 1;
+            text-align: center;
+        }
+
+        .participant img {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #667eea;
+            margin-bottom: 0.5rem;
+        }
+
+        .participant h3 {
+            margin-bottom: 0.5rem;
+        }
+
+        .budget-input {
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            width: 120px;
+        }
+
+        .budget-input.budget-exceeded {
+            border-color: #dc3545;
+            background-color: #fff5f5;
+            box-shadow: 0 0 0 2px rgba(220, 53, 69, 0.2);
+        }
+
+        .budget-container {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .budget-emoji {
+            font-size: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .budget-status {
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 0.8rem;
+            text-align: center;
+            min-width: 80px;
+            transition: all 0.3s ease;
+        }
+
+        .budget-status.positive {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .budget-status.negative {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .expense-groups {
+            display: grid;
+            gap: 1.5rem;
+        }
+
+        .expense-group {
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .group-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .delete-group-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .delete-group-btn:hover {
+            background: #c82333;
+            transform: scale(1.1);
+        }
+
+        .group-total {
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .group-content {
+            padding: 1rem;
+        }
+
+        .expense-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #f0f0f0;
+            position: relative;
+        }
+
+        .expense-item:last-child {
+            border-bottom: none;
+        }
+
+        .delete-expense-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            width: 25px;
+            height: 25px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: absolute;
+            right: -10px;
+            top: 50%;
+            transform: translateY(-50%);
+            transition: all 0.2s ease;
+        }
+
+        .delete-expense-btn:hover {
+            background: #c82333;
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        .expense-item {
+            padding-right: 40px;
+        }
+
+        .expense-details {
+            flex: 1;
+        }
+
+        .expense-name {
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+        }
+
+        .expense-amount {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .distribution-controls {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex: 1;
+            justify-content: center;
+        }
+
+        .participant-share {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .participant-share img {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: 2px solid #667eea;
+        }
+
+        .share-input {
+            width: 80px;
+            padding: 0.25rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            text-align: center;
+            font-weight: bold;
+            color: #667eea;
+            background: white;
+        }
+
+        .share-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.2);
+        }
+
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin: 0 1rem;
+        }
+
+        .percentage-slider {
+            width: 200px;
+            height: 6px;
+            border-radius: 3px;
+            background: #ddd;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .percentage-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #667eea;
+            cursor: pointer;
+        }
+
+        .percentage-display {
+            font-weight: bold;
+            min-width: 40px;
+        }
+
+        .add-expense-btn {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 1rem;
+        }
+
+        .add-group-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 2rem auto;
+            display: block;
+            font-size: 1rem;
+        }
+
+        .summary-section {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .summary-totals {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 1rem;
+        }
+
+        .summary-participant {
+            text-align: center;
+        }
+
+        .summary-participant img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: 3px solid #667eea;
+            margin-bottom: 0.5rem;
+        }
+
+        .total-amount {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .budget-warning {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-top: 1rem;
+            color: #856404;
+            display: none;
+        }
+
+        .popup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .popup {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            text-align: center;
+            max-width: 400px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .popup img {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 3px solid #dc3545;
+            margin-bottom: 1rem;
+        }
+
+        .popup-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 1rem;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="demo-container">
+        <div class="demo-header">
+            <h1>Natthav - Utgiftsfordeling</h1>
+            <p>Demo av hvordan utgifter fordeles mellom samboere</p>
+        </div>
+
+        <div class="participants-section">
+            <div class="participant">
+                <img src="../assets/images/kristoffer.jpg" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'60\' height=\'60\' viewBox=\'0 0 60 60\'%3E%3Ccircle cx=\'30\' cy=\'30\' r=\'30\' fill=\'%23667eea\'/%3E%3Ctext x=\'30\' y=\'38\' text-anchor=\'middle\' fill=\'white\' font-size=\'24\' font-family=\'Arial\'%3EK%3C/text%3E%3C/svg%3E'" alt="Kristoffer Bjekvik">
+                <h3>Kristoffer Bjekvik</h3>
+                <div class="budget-container">
+                    <input type="number" class="budget-input" id="kristoffer-budget" value="15000" placeholder="Budsjett">
+                    <span class="budget-emoji" id="kristoffer-emoji">😊</span>
+                    <div class="budget-status positive" id="kristoffer-status">+4 130 kr</div>
+                </div>
+                <div style="font-size: 0.8rem; color: #666; margin-top: 0.25rem;">månedlig budsjett</div>
+            </div>
+            <div class="participant">
+                <img src="../assets/images/guro.png" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'60\' height=\'60\' viewBox=\'0 0 60 60\'%3E%3Ccircle cx=\'30\' cy=\'30\' r=\'30\' fill=\'%23764ba2\'/%3E%3Ctext x=\'30\' y=\'38\' text-anchor=\'middle\' fill=\'white\' font-size=\'24\' font-family=\'Arial\'%3EG%3C/text%3E%3C/svg%3E'" alt="Guro Kyte Solvik">
+                <h3>Guro Kyte Solvik</h3>
+                <div class="budget-container">
+                    <input type="number" class="budget-input" id="guro-budget" value="12000" placeholder="Budsjett">
+                    <span class="budget-emoji" id="guro-emoji">😊</span>
+                    <div class="budget-status positive" id="guro-status">+2 370 kr</div>
+                </div>
+                <div style="font-size: 0.8rem; color: #666; margin-top: 0.25rem;">månedlig budsjett</div>
+            </div>
+        </div>
+
+        <div class="expense-groups">
+            <div class="expense-group">
+                <div class="group-header">
+                    <h2>🏠 Bolig</h2>
+                    <div class="group-total">12 500 kr/mnd</div>
+                    <button class="delete-group-btn" onclick="deleteGroup(this)" title="Slett hovedgruppe">×</button>
+                </div>
+                <div class="group-content">
+                    <div class="expense-item">
+                        <div class="expense-details">
+                            <div class="expense-name">Månedlig avdrag</div>
+                            <div class="expense-amount">12 500 kr</div>
+                        </div>
+                        <div class="distribution-controls">
+                            <div class="participant-share">
+                                <img src="../assets/images/kristoffer.jpg" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'30\' height=\'30\' viewBox=\'0 0 30 30\'%3E%3Ccircle cx=\'15\' cy=\'15\' r=\'15\' fill=\'%23667eea\'/%3E%3Ctext x=\'15\' y=\'19\' text-anchor=\'middle\' fill=\'white\' font-size=\'12\' font-family=\'Arial\'%3EK%3C/text%3E%3C/svg%3E'" alt="Kristoffer Bjekvik">
+                                <input type="number" class="share-input" value="6250" data-total="12500" oninput="updateFromAmount(this, 'kristoffer')">
+                            </div>
+                            <div class="slider-container">
+                                <div class="percentage-display">50%</div>
+                                <input type="range" class="percentage-slider" min="0" max="100" value="50" data-total="12500" oninput="updateFromSlider(this)">
+                                <div class="percentage-display">50%</div>
+                            </div>
+                            <div class="participant-share">
+                                <input type="number" class="share-input" value="6250" data-total="12500" oninput="updateFromAmount(this, 'samboer')">
+                                <img src="../assets/images/guro.jpg" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'30\' height=\'30\' viewBox=\'0 0 30 30\'%3E%3Ccircle cx=\'15\' cy=\'15\' r=\'15\' fill=\'%23764ba2\'/%3E%3Ctext x=\'15\' y=\'19\' text-anchor=\'middle\' fill=\'white\' font-size=\'12\' font-family=\'Arial\'%3EG%3C/text%3E%3C/svg%3E'" alt="Guro Kyte Solvik">
+                            </div>
+                        </div>
+                        <button class="delete-expense-btn" onclick="deleteExpense(this)" title="Slett utgift">×</button>
+                    </div>
+                    <button class="add-expense-btn">+ Legg til utgift</button>
+                </div>
+            </div>
+
+            <div class="expense-group">
+                <div class="group-header">
+                    <h2>⚡ Energi</h2>
+                    <div class="group-total">1 800 kr/mnd</div>
+                    <button class="delete-group-btn" onclick="deleteGroup(this)" title="Slett hovedgruppe">×</button>
+                </div>
+                <div class="group-content">
+                    <div class="expense-item">
+                        <div class="expense-details">
+                            <div class="expense-name">Månedlig strømregning</div>
+                            <div class="expense-amount">1 500 kr</div>
+                        </div>
+                        <div class="distribution-controls">
+                            <div class="participant-share">
+                                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='30' height='30' viewBox='0 0 30 30'%3E%3Ccircle cx='15' cy='15' r='15' fill='%23667eea'/%3E%3Ctext x='15' y='19' text-anchor='middle' fill='white' font-size='12' font-family='Arial'%3EK%3C/text%3E%3C/svg%3E" alt="Kristoffer">
+                                <input type="number" class="share-input" value="750" data-total="1500" oninput="updateFromAmount(this, 'kristoffer')">
+                            </div>
+                            <div class="slider-container">
+                                <div class="percentage-display">50%</div>
+                                <input type="range" class="percentage-slider" min="0" max="100" value="50" data-total="1500" oninput="updateFromSlider(this)">
+                                <div class="percentage-display">50%</div>
+                            </div>
+                            <div class="participant-share">
+                                <input type="number" class="share-input" value="750" data-total="1500" oninput="updateFromAmount(this, 'samboer')">
+                                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='30' height='30' viewBox='0 0 30 30'%3E%3Ccircle cx='15' cy='15' r='15' fill='%23764ba2'/%3E%3Ctext x='15' y='19' text-anchor='middle' fill='white' font-size='12' font-family='Arial'%3ES%3C/text%3E%3C/svg%3E" alt="Samboer">
+                            </div>
+                        </div>
+                        <button class="delete-expense-btn" onclick="deleteExpense(this)" title="Slett utgift">×</button>
+                    </div>
+                    <div class="expense-item">
+                        <div class="expense-details">
+                            <div class="expense-name">Elbillader tillegg</div>
+                            <div class="expense-amount">300 kr</div>
+                        </div>
+                        <div class="distribution-controls">
+                            <div class="participant-share">
+                                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='30' height='30' viewBox='0 0 30 30'%3E%3Ccircle cx='15' cy='15' r='15' fill='%23667eea'/%3E%3Ctext x='15' y='19' text-anchor='middle' fill='white' font-size='12' font-family='Arial'%3EK%3C/text%3E%3C/svg%3E" alt="Kristoffer">
+                                <input type="number" class="share-input" value="240" data-total="300" oninput="updateFromAmount(this, 'kristoffer')">
+                            </div>
+                            <div class="slider-container">
+                                <div class="percentage-display">80%</div>
+                                <input type="range" class="percentage-slider" min="0" max="100" value="80" data-total="300" oninput="updateFromSlider(this)">
+                                <div class="percentage-display">20%</div>
+                            </div>
+                            <div class="participant-share">
+                                <input type="number" class="share-input" value="60" data-total="300" oninput="updateFromAmount(this, 'samboer')">
+                                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='30' height='30' viewBox='0 0 30 30'%3E%3Ccircle cx='15' cy='15' r='15' fill='%23764ba2'/%3E%3Ctext x='15' y='19' text-anchor='middle' fill='white' font-size='12' font-family='Arial'%3ES%3C/text%3E%3C/svg%3E" alt="Samboer">
+                            </div>
+                        </div>
+                        <button class="delete-expense-btn" onclick="deleteExpense(this)" title="Slett utgift">×</button>
+                    </div>
+                    <button class="add-expense-btn">+ Legg til utgift</button>
+                </div>
+            </div>
+
+            <div class="expense-group">
+                <div class="group-header">
+                    <h2>🏢 Felleskostnader borettslag</h2>
+                    <div class="group-total">3 200 kr/mnd</div>
+                    <button class="delete-group-btn" onclick="deleteGroup(this)" title="Slett hovedgruppe">×</button>
+                </div>
+                <div class="group-content">
+                    <div class="expense-item">
+                        <div class="expense-details">
+                            <div class="expense-name">Felleskostnader borettslag</div>
+                            <div class="expense-amount">2 800 kr</div>
+                        </div>
+                        <div class="distribution-controls">
+                            <div class="participant-share">
+                                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='30' height='30' viewBox='0 0 30 30'%3E%3Ccircle cx='15' cy='15' r='15' fill='%23667eea'/%3E%3Ctext x='15' y='19' text-anchor='middle' fill='white' font-size='12' font-family='Arial'%3EK%3C/text%3E%3C/svg%3E" alt="Kristoffer">
+                                <input type="number" class="share-input" value="1400" data-total="2800" oninput="updateFromAmount(this, 'kristoffer')">
+                            </div>
+                            <div class="slider-container">
+                                <div class="percentage-display">50%</div>
+                                <input type="range" class="percentage-slider" min="0" max="100" value="50" data-total="2800" oninput="updateFromSlider(this)">
+                                <div class="percentage-display">50%</div>
+                            </div>
+                            <div class="participant-share">
+                                <input type="number" class="share-input" value="1400" data-total="2800" oninput="updateFromAmount(this, 'samboer')">
+                                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='30' height='30' viewBox='0 0 30 30'%3E%3Ccircle cx='15' cy='15' r='15' fill='%23764ba2'/%3E%3Ctext x='15' y='19' text-anchor='middle' fill='white' font-size='12' font-family='Arial'%3ES%3C/text%3E%3C/svg%3E" alt="Samboer">
+                            </div>
+                        </div>
+                        <button class="delete-expense-btn" onclick="deleteExpense(this)" title="Slett utgift">×</button>
+                    </div>
+                    <div class="expense-item">
+                        <div class="expense-details">
+                            <div class="expense-name">Parkeringsplass</div>
+                            <div class="expense-amount">400 kr</div>
+                        </div>
+                        <div class="distribution-controls">
+                            <div class="participant-share">
+                                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='30' height='30' viewBox='0 0 30 30'%3E%3Ccircle cx='15' cy='15' r='15' fill='%23667eea'/%3E%3Ctext x='15' y='19' text-anchor='middle' fill='white' font-size='12' font-family='Arial'%3EK%3C/text%3E%3C/svg%3E" alt="Kristoffer">
+                                <input type="number" class="share-input" value="280" data-total="400" oninput="updateFromAmount(this, 'kristoffer')">
+                            </div>
+                            <div class="slider-container">
+                                <div class="percentage-display">70%</div>
+                                <input type="range" class="percentage-slider" min="0" max="100" value="70" data-total="400" oninput="updateFromSlider(this)">
+                                <div class="percentage-display">30%</div>
+                            </div>
+                            <div class="participant-share">
+                                <input type="number" class="share-input" value="120" data-total="400" oninput="updateFromAmount(this, 'samboer')">
+                                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='30' height='30' viewBox='0 0 30 30'%3E%3Ccircle cx='15' cy='15' r='15' fill='%23764ba2'/%3E%3Ctext x='15' y='19' text-anchor='middle' fill='white' font-size='12' font-family='Arial'%3ES%3C/text%3E%3C/svg%3E" alt="Samboer">
+                            </div>
+                        </div>
+                        <button class="delete-expense-btn" onclick="deleteExpense(this)" title="Slett utgift">×</button>
+                    </div>
+                    <button class="add-expense-btn">+ Legg til utgift</button>
+                </div>
+            </div>
+
+            <div class="expense-group">
+                <div class="group-header">
+                    <h2>🛒 Felleskonto</h2>
+                    <div class="group-total">4 000 kr/mnd</div>
+                    <button class="delete-group-btn" onclick="deleteGroup(this)" title="Slett hovedgruppe">×</button>
+                </div>
+                <div class="group-content">
+                    <div class="expense-item">
+                        <div class="expense-details">
+                            <div class="expense-name">Månedlig matbudsjett</div>
+                            <div class="expense-amount">4 000 kr</div>
+                        </div>
+                        <div class="distribution-controls">
+                            <div class="participant-share">
+                                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='30' height='30' viewBox='0 0 30 30'%3E%3Ccircle cx='15' cy='15' r='15' fill='%23667eea'/%3E%3Ctext x='15' y='19' text-anchor='middle' fill='white' font-size='12' font-family='Arial'%3EK%3C/text%3E%3C/svg%3E" alt="Kristoffer">
+                                <input type="number" class="share-input" value="2400" data-total="4000" oninput="updateFromAmount(this, 'kristoffer')">
+                            </div>
+                            <div class="slider-container">
+                                <div class="percentage-display">60%</div>
+                                <input type="range" class="percentage-slider" min="0" max="100" value="60" data-total="4000" oninput="updateFromSlider(this)">
+                                <div class="percentage-display">40%</div>
+                            </div>
+                            <div class="participant-share">
+                                <input type="number" class="share-input" value="1600" data-total="4000" oninput="updateFromAmount(this, 'samboer')">
+                                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='30' height='30' viewBox='0 0 30 30'%3E%3Ccircle cx='15' cy='15' r='15' fill='%23764ba2'/%3E%3Ctext x='15' y='19' text-anchor='middle' fill='white' font-size='12' font-family='Arial'%3ES%3C/text%3E%3C/svg%3E" alt="Samboer">
+                            </div>
+                        </div>
+                        <button class="delete-expense-btn" onclick="deleteExpense(this)" title="Slett utgift">×</button>
+                    </div>
+                    <button class="add-expense-btn">+ Legg til utgift</button>
+                </div>
+            </div>
+        </div>
+
+        <button class="add-group-btn">+ Legg til ny hovedgruppe</button>
+
+        <div class="summary-section">
+            <h3 style="text-align: center; margin-bottom: 1rem;">Månedlig totaloversikt</h3>
+            <div class="summary-totals">
+                <div class="summary-participant">
+                    <img src="../assets/images/kristoffer.jpg" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'50\' height=\'50\' viewBox=\'0 0 50 50\'%3E%3Ccircle cx=\'25\' cy=\'25\' r=\'25\' fill=\'%23667eea\'/%3E%3Ctext x=\'25\' y=\'32\' text-anchor=\'middle\' fill=\'white\' font-size=\'20\' font-family=\'Arial\'%3EK%3C/text%3E%3C/svg%3E'" alt="Kristoffer Bjekvik">
+                    <h4>Kristoffer Bjekvik</h4>
+                    <div class="total-amount" id="kristoffer-total">10 870 kr</div>
+                    <div style="font-size: 0.8rem; color: #666;">av 15 000 kr budsjett</div>
+                </div>
+                <div class="summary-participant">
+                    <img src="../assets/images/guro.jpg" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'50\' height=\'50\' viewBox=\'0 0 50 50\'%3E%3Ccircle cx=\'25\' cy=\'25\' r=\'25\' fill=\'%23764ba2\'/%3E%3Ctext x=\'25\' y=\'32\' text-anchor=\'middle\' fill=\'white\' font-size=\'20\' font-family=\'Arial\'%3EG%3C/text%3E%3C/svg%3E'" alt="Guro Kyte Solvik">
+                    <h4>Guro Kyte Solvik</h4>
+                    <div class="total-amount" id="samboer-total">9 630 kr</div>
+                    <div style="font-size: 0.8rem; color: #666;">av 12 000 kr budsjett</div>
+                </div>
+            </div>
+            
+            <div class="budget-warning" id="budget-warning">
+                <strong>⚠️ Budsjett overskredet!</strong>
+                <p>En eller flere deltakere overstiger sitt månedlige budsjett.</p>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        function updateFromSlider(slider) {
+            const totalAmount = parseInt(slider.getAttribute('data-total'));
+            const percentage = parseInt(slider.value);
+            const otherPercentage = 100 - percentage;
+            
+            const kristofferAmount = Math.round(totalAmount * percentage / 100);
+            const samboerAmount = totalAmount - kristofferAmount;
+            
+            const expenseItem = slider.closest('.expense-item');
+            const shareInputs = expenseItem.querySelectorAll('.share-input');
+            const percentageDisplays = expenseItem.querySelectorAll('.percentage-display');
+            
+            shareInputs[0].value = kristofferAmount;
+            shareInputs[1].value = samboerAmount;
+            percentageDisplays[0].textContent = percentage + '%';
+            percentageDisplays[1].textContent = otherPercentage + '%';
+            
+            updateTotals();
+        }
+
+        function updateFromAmount(input, participant) {
+            const totalAmount = parseInt(input.getAttribute('data-total'));
+            const currentAmount = parseInt(input.value) || 0;
+            
+            // Sørg for at beløpet ikke overskrider totalen
+            if (currentAmount > totalAmount) {
+                input.value = totalAmount;
+                currentAmount = totalAmount;
+            } else if (currentAmount < 0) {
+                input.value = 0;
+                currentAmount = 0;
+            }
+            
+            const expenseItem = input.closest('.expense-item');
+            const shareInputs = expenseItem.querySelectorAll('.share-input');
+            const slider = expenseItem.querySelector('.percentage-slider');
+            const percentageDisplays = expenseItem.querySelectorAll('.percentage-display');
+            
+            let kristofferAmount, samboerAmount, kristofferPercentage, samboerPercentage;
+            
+            if (participant === 'kristoffer') {
+                kristofferAmount = currentAmount;
+                samboerAmount = totalAmount - kristofferAmount;
+                shareInputs[1].value = samboerAmount;
+            } else {
+                samboerAmount = currentAmount;
+                kristofferAmount = totalAmount - samboerAmount;
+                shareInputs[0].value = kristofferAmount;
+            }
+            
+            kristofferPercentage = Math.round((kristofferAmount / totalAmount) * 100);
+            samboerPercentage = 100 - kristofferPercentage;
+            
+            slider.value = kristofferPercentage;
+            percentageDisplays[0].textContent = kristofferPercentage + '%';
+            percentageDisplays[1].textContent = samboerPercentage + '%';
+            
+            updateTotals();
+        }
+
+        function updateTotals() {
+            let kristofferTotal = 0;
+            let samboerTotal = 0;
+            
+            document.querySelectorAll('.expense-item').forEach(item => {
+                const shareInputs = item.querySelectorAll('.share-input');
+                kristofferTotal += parseInt(shareInputs[0].value) || 0;
+                samboerTotal += parseInt(shareInputs[1].value) || 0;
+            });
+            
+            document.getElementById('kristoffer-total').textContent = kristofferTotal.toLocaleString() + ' kr';
+            document.getElementById('samboer-total').textContent = samboerTotal.toLocaleString() + ' kr';
+            
+            checkBudgets(kristofferTotal, samboerTotal);
+        }
+
+        function checkBudgets(kristofferTotal, samboerTotal) {
+            const kristofferBudget = parseInt(document.getElementById('kristoffer-budget').value) || 15000;
+            const samboerBudget = parseInt(document.getElementById('guro-budget').value) || 12000;
+            
+            const kristofferBudgetInput = document.getElementById('kristoffer-budget');
+            const guroBudgetInput = document.getElementById('guro-budget');
+            const kristofferEmoji = document.getElementById('kristoffer-emoji');
+            const guroEmoji = document.getElementById('guro-emoji');
+            const kristofferStatus = document.getElementById('kristoffer-status');
+            const guroStatus = document.getElementById('guro-status');
+            
+            // Reset budget input styling
+            kristofferBudgetInput.classList.remove('budget-exceeded');
+            guroBudgetInput.classList.remove('budget-exceeded');
+            
+            // Check Kristoffer's budget and set emoji and status
+            const kristofferDiff = kristofferBudget - kristofferTotal;
+            if (kristofferDiff < 0) {
+                // Over budget
+                kristofferBudgetInput.classList.add('budget-exceeded');
+                kristofferEmoji.textContent = '😭';
+                kristofferStatus.textContent = Math.abs(kristofferDiff).toLocaleString() + ' kr';
+                kristofferStatus.className = 'budget-status negative';
+            } else if (kristofferDiff < 500) {
+                // Close to budget (within 500)
+                kristofferEmoji.textContent = '😐';
+                kristofferStatus.textContent = '+' + kristofferDiff.toLocaleString() + ' kr';
+                kristofferStatus.className = 'budget-status positive';
+            } else {
+                // Well within budget
+                kristofferEmoji.textContent = '😊';
+                kristofferStatus.textContent = '+' + kristofferDiff.toLocaleString() + ' kr';
+                kristofferStatus.className = 'budget-status positive';
+            }
+            
+            // Check Guro's budget and set emoji and status
+            const guroDiff = samboerBudget - samboerTotal;
+            if (guroDiff < 0) {
+                // Over budget
+                guroBudgetInput.classList.add('budget-exceeded');
+                guroEmoji.textContent = '😭';
+                guroStatus.textContent = Math.abs(guroDiff).toLocaleString() + ' kr';
+                guroStatus.className = 'budget-status negative';
+            } else if (guroDiff < 500) {
+                // Close to budget (within 500)
+                guroEmoji.textContent = '😐';
+                guroStatus.textContent = '+' + guroDiff.toLocaleString() + ' kr';
+                guroStatus.className = 'budget-status positive';
+            } else {
+                // Well within budget
+                guroEmoji.textContent = '😊';
+                guroStatus.textContent = '+' + guroDiff.toLocaleString() + ' kr';
+                guroStatus.className = 'budget-status positive';
+            }
+        }
+
+        function deleteGroup(button) {
+            if (confirm('Er du sikker på at du vil slette denne hovedgruppen?')) {
+                const expenseGroup = button.closest('.expense-group');
+                expenseGroup.remove();
+                updateTotals();
+            }
+        }
+
+        function deleteExpense(button) {
+            if (confirm('Er du sikker på at du vil slette denne utgiften?')) {
+                const expenseItem = button.closest('.expense-item');
+                expenseItem.remove();
+                updateTotals();
+            }
+        }
+
+        // Initial calculation
+        updateTotals();
+    </script>
+</body>
+</html>
