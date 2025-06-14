@@ -7,7 +7,23 @@
     <link rel="stylesheet" href="styles/main.css">
 </head>
 <body>
-    <div class="app-container">
+    <!-- Login Screen -->
+    <div id="login-screen" class="login-screen">
+        <div class="login-container">
+            <div class="login-header">
+                <h1>🏠 Natthav</h1>
+                <p>Felles utgifter for samboere</p>
+            </div>
+            <div class="login-form">
+                <input type="password" id="password-input" placeholder="Skriv inn passord" class="password-input">
+                <button onclick="checkPassword()" class="login-btn">Logg inn</button>
+                <div id="error-message" class="error-message" style="display: none;">Feil passord. Prøv igjen.</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main App (hidden initially) -->
+    <div id="main-app" class="app-container" style="display: none;">
         <header class="app-header">
             <h1>Natthav</h1>
         </header>
